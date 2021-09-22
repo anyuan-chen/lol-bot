@@ -24,6 +24,11 @@ for (const file of commandFiles) {
   client.commands.set(command.name, command);
 }
 
+const listenFiles = fs.readdirSync("listeners").map((file) => {
+  return file.slice(0, file.length - 3);
+});
+console.log(listenFiles);
+
 // login to discord
 client.login(token);
 
@@ -43,5 +48,9 @@ client.on("messageCreate", (message) => {
         ephemeral: true,
       });
     }
+  } else {
+    listenFiles.forEach((file) => {
+      client.listenerCount.get(file).execute(message, client);
+    });
   }
 });
