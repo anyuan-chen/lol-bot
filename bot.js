@@ -23,6 +23,14 @@ for (const file of commandFiles) {
   const command = require(`./cmds/${file}`);
   client.commands.set(command.name, command);
 }
+client.listener = new Collection();
+const listenerFiles = fs
+  .readdirSync("./listeners/")
+  .filter((file) => file.endsWith(".js"));
+for (const file of listenerFiles) {
+  const listeners = require(`./listeners/${file}`);
+  client.listener.set(listeners.name, listeners);
+}
 
 const listenFiles = fs.readdirSync("listeners").map((file) => {
   return file.slice(0, file.length - 3);
@@ -50,7 +58,7 @@ client.on("messageCreate", (message) => {
     }
   } else {
     listenFiles.forEach((file) => {
-      client.listenerCount.get(file).execute(message, client);
+      client.listener.get(file).execute(message, client);
     });
   }
 });
